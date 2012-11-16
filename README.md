@@ -3,6 +3,7 @@ aixigo-log
 
 A simple logging module that can be used to create log entries with file and linenumber.
 
+Improvements or ideas are welcome.
 
 ## MIT License
 
