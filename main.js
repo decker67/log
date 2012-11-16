@@ -1,5 +1,5 @@
 
-(function( name, global, definition ) {
+(function ( name, global, definition ) {
 
     'use strict';
 
@@ -23,45 +23,44 @@
     //var findDetailsRegularExpression = /^\s*at\s*([\w<>\.]*)\s*\((.*?):(\d*):(\d*)\)$/; extracts line number and column
    var findDetailsRegularExpression = /^\s*at\s*([\w<>\.]*)\s*(.*)$/;
 
-   var allLogLevel = {
-      NONE:    0,
-      ERROR:   1,
-      WARN:    2,
-      INFO:    3,
-      DEBUG:   4,
-      TRACE:   5,
-      DATA:    6,
-      DEVELOP: 7
-   };
+   var allLogLevel = [
+      'NONE',
+      'ERROR',
+      'WARN',
+      'INFO',
+      'DEBUG',
+      'TRACE',
+      'DATA',
+      'DEVELOP'
+   ];
 
    // initial log level used
-   var actualLogLevel = 'INFO';
+   var actualLogLevel = 3; //INFO
 
    // log method to consume logging messages
-   var actualConsumerFunction = console.log;
-   var actualConsumerSelf = console;
+   var actualConsumerFunction = console.log.bind( console );
 
    // creates the api to log messages
    var currentLevel = null;
-   for ( currentLevel in allLogLevel ) {
-      if( currentLevel === 'NONE' ) continue;
-      logger[ currentLevel.toLowerCase() ] = function( currentLevel ) {
-          return function( message ) {
-             if ( allLogLevel[ actualLogLevel ] < allLogLevel[ currentLevel ] ) return;
+   var allLogLevelLength = allLogLevel.length;
+   for ( currentLevel = 0; currentLevel < allLogLevelLength; currentLevel += 1 ) {
+      if( allLogLevel[ currentLevel ] === 'NONE' ) { continue; }
+      logger[ allLogLevel[ currentLevel ].toLowerCase() ] = function ( currentLevel ) {
+          return function ( message ) {
+             if ( actualLogLevel < currentLevel ) { return; }
              log( message );
-          }
+          };
       } ( currentLevel );
    }
 
    // set consumer of the log messages
-   function to( consumer, self ) {
+   function to( consumer ) {
       actualConsumerFunction = consumer;
-      actualConsumerSelf = self;
    }
 
    // the function that logs using an error
    function log( message ) {
-       var stackInfo = (new Error).stack.split('\n')[ 3 ];
+       var stackInfo = ( new Error() ).stack.split( '\n' )[ 3 ];
        var matches = findDetailsRegularExpression.exec( stackInfo );
        var callingFunction = null;
        var callingOccured = null;
@@ -69,30 +68,19 @@
 
        if( matches === null ) {
           console.log( stackInfo );
-          throw Error( 'InvalidStackError', 'Stacktrace is invalid' );
+          throw new Error( 'InvalidStackError', 'Stacktrace is invalid' );
        } else {
           callingFunction = matches[ 1 ];
           callingOccured = matches[ 2 ];
           logMessage = new Date().toISOString() + ': ' + message + ' ' + callingOccured + ' in ' + callingFunction;
-          actualConsumerFunction.call( actualConsumerSelf, logMessage );
+          actualConsumerFunction.call( this, logMessage );
        }
-   }
-
-   // helper to find a level with a given number
-   function findLevel( number ) {
-      var level = null;
-      for ( level in allLogLevel ) {
-        if( allLogLevel[ level ] === number )
-        {
-           return level;
-        }
-      }
    }
 
    // set the actual log level or returns it
    function level( newLevel ) {
       if( newLevel ) {
-         actualLogLevel = findLevel( newLevel );
+         actualLogLevel = allLogLevel.indexOf( newLevel );
       } else {
          return allLogLevel[ actualLogLevel ];
       }
@@ -101,7 +89,7 @@
    // API
    return {
       to:      to,
-      all:     allLogLevel,
+      //all:     allLogLevel,
       level:   level,
 
       error:   logger.error,
