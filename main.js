@@ -37,7 +37,7 @@
    // initial log level used
    var actualLogLevel = 'INFO';
 
-   // should have a log method to consume logging messages
+   // log method to consume logging messages
    var actualConsumerFunction = console.log;
    var actualConsumerSelf = console;
 
@@ -53,7 +53,7 @@
       } ( currentLevel );
    }
 
-   // consumer of the log messages
+   // set consumer of the log messages
    function to( consumer, self ) {
       actualConsumerFunction = consumer;
       actualConsumerSelf = self;
@@ -78,6 +78,7 @@
        }
    }
 
+   // helper to find a level with a given number
    function findLevel( number ) {
       var level = null;
       for ( level in allLogLevel ) {
@@ -88,7 +89,7 @@
       }
    }
 
-   // set the actual log level
+   // set the actual log level or returns it
    function level( newLevel ) {
       if( newLevel ) {
          actualLogLevel = findLevel( newLevel );
@@ -97,6 +98,7 @@
       }
    }
 
+   // API
    return {
       to:      to,
       all:     allLogLevel,
