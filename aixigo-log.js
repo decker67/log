@@ -48,7 +48,7 @@
       logger[ allLogLevel[ currentLevel ].toLowerCase() ] = function ( currentLevel ) {
           return function () {
               if ( actualLogLevel < currentLevel ) { return; }
-             log( Array.prototype.join.call( arguments, ' ') );
+             log( arguments );
           };
       } ( currentLevel );
    }
@@ -59,7 +59,8 @@
    }
 
    // the function that logs using an error
-   function log( message ) {
+   function log() {
+       var message = Array.prototype.join.call( arguments[0], ' ')
        var stackInfo = ( new Error() ).stack.split( '\n' )[ 3 ];
        var matches = findDetailsRegularExpression.exec( stackInfo );
        var callingFunction = null;
