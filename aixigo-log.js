@@ -48,7 +48,7 @@
       logger[ allLogLevel[ currentLevel ].toLowerCase() ] = function ( currentLevel ) {
           return function () {
               if ( actualLogLevel < currentLevel ) { return; }
-             log( arguments );
+             log.apply( this, arguments );
           };
       } ( currentLevel );
    }
@@ -60,7 +60,6 @@
 
    // the function that logs using an error
    function log() {
-       var message = Array.prototype.join.call( arguments[0], ' ')
        var stackInfo = ( new Error() ).stack.split( '\n' )[ 3 ];
        var matches = findDetailsRegularExpression.exec( stackInfo );
        var callingFunction = null;
@@ -74,7 +73,9 @@
           callingFunction = matches[ 1 ];
           callingOccured = matches[ 2 ];
 
-          logMessage = new Date().toISOString() + ': ' + message + ' ' + callingOccured + ' in ' + callingFunction;
+          logMessage = new Date().toISOString() + ': ' +
+              Array.prototype.join.call( arguments, ' ') + ' ' +
+              callingOccured + ' in ' + callingFunction;
           actualConsumerFunction.call( this, logMessage );
        }
    }
