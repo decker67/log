@@ -1,5 +1,5 @@
-aixigo-log
-==========
+log
+===
 
 A simple logging module that can be used to create log entries with file and linenumber.
 

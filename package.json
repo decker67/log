@@ -1,5 +1,5 @@
 {
   "name": "aixigo-log",
   "version": "0.0.1",
-  "main": "./aixigo-log.js"
+  "main": "./log.js"
 }
